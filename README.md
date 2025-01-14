@@ -27,7 +27,6 @@
 <!-- Visitor Count -->
 ![Visitor Count](https://komarev.com/ghpvc/?username=Sivamani1611&color=brightgreen)<br/>
 
-
 ### ✍️ Random Dev Quote
 ![](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=merko)
 
