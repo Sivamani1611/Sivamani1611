@@ -1,0 +1,58 @@
+name: Update README with Total Lines of Code
+
+on:
+  push:
+    branches:
+      - main  # Or change it to the default branch of your repository
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set up GitHub CLI
+        run: |
+          curl -s https://github.com/cli/cli/releases/download/v2.25.0/gh_2.25.0_linux_amd64.deb -o gh.deb
+          sudo dpkg -i gh.deb
+          sudo apt-get install -f
+
+      - name: Authenticate GitHub CLI
+        run: gh auth login --with-token < ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List all repositories
+        id: repos
+        run: |
+          repos=$(gh repo list --limit 100 --json name --jq '.[].name')
+          echo "Repositories found: $repos"
+          echo "repos=$repos" >> $GITHUB_ENV
+
+      - name: Clone all repositories and calculate lines of code
+        id: loc
+        run: |
+          total_loc=0
+          for repo in ${{ env.repos }}; do
+            echo "Cloning $repo"
+            gh repo clone $repo
+            cd $repo
+            loc=$(cloc --json . | jq '.SUM.code')
+            total_loc=$((total_loc + loc))
+            cd ..
+          done
+          echo "Total lines of code: $total_loc"
+          echo "total_loc=$total_loc" >> $GITHUB_ENV
+
+      - name: Update README.md with total lines of code
+        run: |
+          sed -i "s/LOC_PLACEHOLDER/${{ env.total_loc }}/g" README.md
+
+      - name: Commit and push changes to README.md
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "Update README with total LOC"
+          git push
