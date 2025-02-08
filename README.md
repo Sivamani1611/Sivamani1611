@@ -35,5 +35,3 @@
 
 
 
-This GitHub profile contains **LOC_PLACEHOLDER** lines of code across all repositories.
-
