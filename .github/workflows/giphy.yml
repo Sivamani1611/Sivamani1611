@@ -1,0 +1,58 @@
+name: Random GIF Update
+
+on:
+  schedule:
+    # Runs at midnight UTC every day (adjust timing as needed)
+    - cron: "0 0 * * *"
+  push:
+    branches:
+      - main
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout repository
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # Step 2: Set up Python environment
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    # Step 3: Update README.md with a random GIF
+    - name: Random GIF Update
+      run: |
+        import random
+
+        # Define the list of Giphy URLs
+        gifs = [
+          "https://media.giphy.com/media/wGWFVvwJybDwTlnTSS/giphy.gif?cid=ecf05e47pchuje1lqftkfa2wy5b32crmut0sd8795j2mjmlg&ep=v1_gifs_search&rid=giphy.gif&ct=g",
+          "https://media.giphy.com/media/3NyvreZAtNLrNKTrKa/giphy.gif?cid=ecf05e47clk2pcdnxi9vqzs3d4bjymp5ypd8y353ijxn3lq6&ep=v1_gifs_search&rid=giphy.gif&ct=g",
+          "https://media.giphy.com/media/RbtJJPft2P7rcpbBdb/giphy.gif?cid=ecf05e47pchuje1lqftkfa2wy5b32crmut0sd8795j2mjmlg&ep=v1_gifs_search&rid=giphy.gif&ct=g"
+        ]
+
+        # Choose a random GIF
+        selected_gif = random.choice(gifs)
+
+        # Read the README.md file
+        with open("README.md", "r") as file:
+            readme = file.read()
+
+        # Replace the existing GIF with the randomly selected one
+        readme = readme.replace("!\\[GIF\\].*", f"![GIF]({selected_gif})")
+
+        # Write the updated README back to the file
+        with open("README.md", "w") as file:
+            file.write(readme)
+
+    # Step 4: Commit and push the changes back to the repository
+    - name: Commit and push changes
+      uses: EndBug/add-and-commit@v7
+      with:
+        author_name: 'GitHub Actions'
+        author_email: 'actions@github.com'
+        message: 'Update GIF randomly'
