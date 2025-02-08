@@ -40,7 +40,6 @@
 </picture>
 
 
-![GIF](https://media.giphy.com/media/Rbst7XSD9K2dsazQTE/giphy.gif)
 
 
 
